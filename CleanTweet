@@ -1,0 +1,139 @@
+public class CleanTweet {
+
+	public static String cleanTweet(String tweet) {
+		tweet = tweet.toLowerCase(); // Change all the letters to lowercase
+		String[] near_final_tweet = new String[70];
+		int counter = 0;
+
+		// Tokenize the tweet and pass to an array (using whitespace, dots,
+		// commas, tabs and carriage return)
+		String[] tokens = tweet.split(" |\\.|\\,|\\;|\\!|\\\n|\\\t|\\\\|\\/");
+
+		for (int x = 0; x < tokens.length; x++) {
+			String holder = tokens[x];
+			String holder2 = "";
+
+			// Delete aposthropes
+			for (int y = 0; y < holder.length(); y++) {
+				char c = holder.charAt(y);
+				if (c == '\'' | c == '\"' | c== '?' | c == '!') {
+				} else {
+					holder2 += holder.charAt(y);
+				}
+			}
+			tokens[x] = holder2;
+		}
+
+		// A for loop to check each word now in the array.
+		for (int x = 0; x < tokens.length; x++) {
+			boolean usefult_token = true; // This will act as a switch and determine what words are used in the final tweet
+			String holder = tokens[x];
+
+			// Delete words less than 3 characters
+			if (holder.length() < 3) {
+				usefult_token = false;
+			} else {
+				
+				if (holder != "") {
+					char first_char = holder.charAt(0); // This is used in the @ check, the http check and to verify if its a letter Vs symbol
+					int char_val = first_char;
+					// eliminate website links
+					if (first_char == 'h' && holder.length() >= 4) {
+						String check_web = holder.substring(0, 4); // Start atfirst char and 4 in lenght
+						if (check_web.equals("http")) {
+							first_char = '@'; // Make it into the @ symbol so it skips the rest
+						}
+					}
+					// Elimnate the @words by checking the first character in
+					// the token string &
+					if (first_char == '@') {
+						usefult_token = false;
+					} else { // else everything else needs to be checked
+
+						// This if else was brought in as real words can't be
+						// emotions and vice versa so only one search needs to
+						// be done
+						if (char_val <= 122 && char_val >= 97) { // Using the  int values of lowercase  letters 97-122
+							usefult_token = (removeStopWords(holder)); // If its  a stopword useful token gets set to false from the function
+						} else {
+							holder = replaceEmotions(holder); // Check for emotions
+						}
+					}
+				}
+			}
+			// If useful token is true build on the final tweet
+			if (usefult_token && holder != "") {
+				near_final_tweet[counter] = holder; // Build the final															// tweet
+				counter++;
+			}
+		}
+
+		// Set a new array that will only be the actual necessary size
+		String[] final_tweet = new String[counter];
+		for (int x = 0; x < counter; x++) {
+			final_tweet[x] = near_final_tweet[x];
+		}
+		String clean_tweet ="";
+		for(int x=0; x<final_tweet.length; x++){
+			if(final_tweet[x]==""){
+				
+			}
+			if(x==final_tweet.length-1){
+				clean_tweet += final_tweet[x];
+			}else{
+				clean_tweet += final_tweet[x] + " ";
+				//System.out.println("NEW TEST WORD IS:" + final_tweet[x]);
+			}
+		}
+		
+		return clean_tweet;
+	}
+
+	public static boolean removeStopWords(String token) {
+		String[] stop_words = {"a","able","about","above","according","accordingly","across","actually","after","afterwards","again","against","all","allow","allows","almost","along","already","also","although","always","am","among","amongst","an","and","another","any","anybody","anyhow","anyone","anything","anyway","anyways","anywhere","apart","appear","are","aren't","around","as","aside","ask","asking","associated","at","away","be","became","because","become","becomes","becoming","been","before","beforehand","behind","being","between","both","brief","but","by","came","can","cant","cause","causes","changes","c'mon","com","come","comes","consider","considering","contain","containing","contains","corresponding","could","course","currently","definitely","described","despite","did","different","do","does","doing","done","down","downwards","during","each","edu","eg","eight","either","else","elsewhere","enough","entirely","especially","etc","ever","every","everybody","everyone","everything","everywhere","ex","exactly","example","except","far","fifth","first","five","followed","following","follows","for","former","formerly","forth","four","from","further","furthermore","get","gets","getting","given","gives","go","goes","going","gone","got","gotten","had","happens","has","have","having","he","he'd","he'll","hello","hence","her","here","hereafter","hereby","herein","here's","hereupon","hers","herself","he's","hi","him","himself","his","hither","hopefully","how","howbeit","however","how's","i","i'd","ie","if","i'll","i'm","immediate","in","inasmuch","inc","indeed","indicate","indicated","indicates","inner","insofar","instead","into","inward","is","isn't","it","it'd","it'll","its","it's","itself","i've","just","keep","keeps","kept","know","known","knows","last","lately","later","latter","latterly","least","less","lest","let","let's","look","looking","looks","ltd","mainly","many","may","maybe","me","mean","meanwhile","might","moreover","must","my","myself","name","namely","nd","near","nearly","necessary","need","needs","neither","never","nevertheless","new","next","nine","no","nobody","non","none","noone","nor","normally","nothing","novel","now","nowhere","obviously","of","off","often","oh","ok","okay","old","on","once","one","ones","only","onto","or","other","others","ought","our","ours","ourselves","ourselvesout","out","outside","over","overall","own","particular","particularly","per","perhaps","placed","please","plus","possible","probably","provides","que","qv","rd","re","really","right","said","same","saw","say","saying","says","second","secondly","see","seeing","seem","seemed","seeming","seems","seen","self","selves","sent","serious","seven","several","shall","she","she'd","she'll","she's","should","since","six","so","some","somebody","somehow","someone","something","sometime","sometimes","somewhat","somewhere","soon","specified","specify","specifying","still","sub","such","sup","sure","take","taken","tell","tends","th","than","that","thats","that's","the","their","theirs","them","themselves","then","thence","there","thereafter","thereby","therefore","therein","theres","there's","thereupon","these","they","they'd","they'll","they're","they've","think","third","this","thorough","thoroughly","those","though","three","through","throughout","thru","thus","to","together","too","took","toward","towards","tried","tries","try","trying","t's","twice","two","un","under","unless","until","unto","up","upon","us","use","used","useful","uses","using","usually","value","various","very","via","viz","vs","want","wants","was","wasn't","way","we","we'd","we'll","went","were","we're","weren't","we've","what","whatever","what's","when","whence","whenever","when's","where","whereafter","whereas","whereby","wherein","where's","whereupon","wherever","whether","which","while","whither","who","whoever","whole","whom","who's","whose","why","why's","with","within","without","won't","would","yes","yet","you","you'd","you'll","your","you're","yours","yourself","yourselves","you've","zero"};
+
+		int stop_count = stop_words.length; // Count the size of the stop words
+											// for the for loop
+
+		// While loop runs throught each token to check if it has an emotion
+		// symbols
+		for (int i = 0; i < stop_count; i++) {
+			if (token.equals(stop_words[i])) {
+				return false; // Exit as it no longer needs to be checked
+			}
+		}
+		return true;
+	}
+
+	public static String replaceEmotions(String token) {
+		// This array has winks, smileys and laughing emotions
+		String[] happy_emotions = { ">:]", ":-)", ":)", ":o)", ":]", ":3",
+				":c)", ":>", "=]", "8)", "=)", ":}", ":∧)", ">:D", ":-D", ":D",
+				"8-D", "8D", "x-D", "xD", "X-D", "XD", "=-D", "=D", "=-3",
+				"=3", ">;]", ";-)", ";)", "*-)", "*)", ";-]" };
+		int total_happy = happy_emotions.length;
+		// While loop runs throught each token to check if it has an emotion
+		// symbols
+		for (int i = 0; i < total_happy; i++) {
+			if (token.equals(happy_emotions[i])) {
+				token = "happy";
+				return token; // Prevents it looking any further for emotions
+			}
+		}
+
+		String[] sad_emotions = { "D:<", ">:(", ">:-C", ">:C", ">:O", "D-:<",
+				">:-(", ":-@", ":@", ";( ’", "’D<", ":L", ":’(", ";*(", ": (",
+				">:[", ":-(", ":(", ":-c", ":c", ":-<", ":<", ":-[", ":[", ":{" };
+		int total_sad = sad_emotions.length;
+		// While loop runs throught each token to check if it has an emotion
+		// symbols
+		for (int i = 0; i < total_sad; i++) {
+			if (token == sad_emotions[i]) {
+				token = "sad";
+				return token; // Prevents it looking any further for emotions
+			}
+		}
+		token = ""; // Return a blank token as its not an English word now
+		return token;
+	}
+}
